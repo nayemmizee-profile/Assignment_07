@@ -53,7 +53,7 @@ export default async function AllProductCard() {
           return (
             <Link
               key={product.id}
-              href={`/products/${product.slug}`}
+              href={`/product/${product.category}`}
               className="group"
             >
               <article className="h-full rounded-[20px] border border-gray-200 bg-[#fdfefe] p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#07883f]/30 hover:shadow-lg">
