@@ -1,14 +1,22 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function AllProductCard() {
-  const res = await fetch("https://api.abcz.workers.dev/api/bazardor/products");
+async function AllProductCardData() {
+  const res = await fetch(
+    "https://api.abcz.workers.dev/api/bazardor/products",
+    {
+      cache: "no-store",
+    },
+  );
 
-  const data = await res.json();
+  if (!res.ok) {
+    throw new Error("পণ্যের তথ্য পাওয়া যায়নি");
+  }
 
-  const products = data;
+  const products = await res.json();
 
   function getPriceChange(change) {
-    if (change.dir === "up") {
+    if (change?.dir === "up") {
       return {
         icon: "↑",
         text: `${change.pct}%`,
@@ -16,7 +24,7 @@ export default async function AllProductCard() {
       };
     }
 
-    if (change.dir === "down") {
+    if (change?.dir === "down") {
       return {
         icon: "↓",
         text: `${change.pct}%`,
@@ -25,35 +33,35 @@ export default async function AllProductCard() {
     }
 
     return {
-      icon: "-- 0.0%",
-      text: "",
+      icon: "--",
+      text: "0.0%",
       className: "bg-gray-100 text-gray-500",
     };
   }
 
   return (
-    <section className="w-full max-w-[1200px] mx-auto mt-10">
+    <section className="mx-auto mt-10 w-full max-w-[1200px]">
       {/* Section Header */}
-      <div className="mb-5 flex flex-col justify-baseline  gap-3">
-        <h2 className="text-[20px] gap-3 flex md:text-3xl font-bold text-[#202824]">
-          <span className="text-[#07883f] text-lg">●</span> সব পণ্য
+      <div className="mb-5 flex flex-col gap-3">
+        <h2 className="flex gap-3 text-[20px] font-bold text-[#202824] md:text-3xl">
+          <span className="text-lg text-[#07883f]">●</span>
+          সব পণ্য
         </h2>
 
-        <p className="text-[8px] md:text-base font-bold text-[#555655]">
+        <p className="text-[8px] font-bold text-[#555655] md:text-base">
           মোট {products.length}টি পণ্য দেখানো হচ্ছে
         </p>
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => {
-          // প্রতিটি product-এর price change বের করছি
           const change = getPriceChange(product.change);
 
           return (
             <Link
               key={product.id}
-              href={`/product/${product.category}`}
+              href={`/products/${product.category}`}
               className="group"
             >
               <article className="h-full rounded-[20px] border border-gray-200 bg-[#fdfefe] p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#07883f]/30 hover:shadow-lg">
@@ -71,7 +79,7 @@ export default async function AllProductCard() {
                     </h3>
 
                     <p className="mt-1 text-sm text-gray-500">
-                      প্রতি {product.unit}
+                      প্রতি {product.unit === "kg" ? "কেজি" : product.unit}
                     </p>
                   </div>
                 </div>
@@ -99,5 +107,35 @@ export default async function AllProductCard() {
         })}
       </div>
     </section>
+  );
+}
+
+export default function AllProductCard() {
+  return (
+    <Suspense
+      fallback={
+        <section className="mx-auto mt-10 w-full max-w-[1200px]">
+          <div className="mb-5 flex flex-col gap-3">
+            <h2 className="flex gap-3 text-[20px] font-bold text-[#202824] md:text-3xl">
+              <span className="text-lg text-[#07883f]">●</span>
+              সব পণ্য
+            </h2>
+
+            <p className="text-sm text-gray-500">পণ্যের তথ্য লোড হচ্ছে...</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-40 animate-pulse rounded-[20px] border border-gray-200 bg-[#fdfefe] p-5"
+              />
+            ))}
+          </div>
+        </section>
+      }
+    >
+      <AllProductCardData />
+    </Suspense>
   );
 }

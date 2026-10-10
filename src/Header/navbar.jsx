@@ -14,7 +14,7 @@ export default async function Navbar() {
         {data.map((n) => (
           <Link
             key={n.id}
-            href={n.slug}
+            href={`/products/${n.id}`}
             className="flex text-[12px] transition hover:text-red-700 items-center font-bold gap-1"
           >
             <span>{n.icon}</span>

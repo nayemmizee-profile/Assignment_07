@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function CategoryProducts({ params }) {
+async function CategoryProductsData({ params }) {
   const { slug } = await params;
-  console.log(slug);
 
   const res = await fetch(
     `https://api.abcz.workers.dev/api/bazardor/products?category=${slug}`,
+    {
+      cache: "no-store",
+    },
   );
 
   if (!res.ok) {
@@ -32,13 +35,13 @@ export default async function CategoryProducts({ params }) {
     }
 
     return {
-      icon: "—",
-      text: "পরিবর্তন নেই",
+      icon: "--",
+      text: "0.0%",
       className: "bg-gray-100 text-gray-500",
     };
   }
 
-  const categoryName = products[0]?.categoryNameBn || category;
+  const categoryName = products[0]?.categoryNameBn || slug;
   const categoryIcon = products[0]?.categoryIcon || "🛒";
 
   return (
@@ -86,7 +89,7 @@ export default async function CategoryProducts({ params }) {
             return (
               <Link
                 key={product.id}
-                href={`/products/${product.slug}`}
+                href={`/product/${product.id}`}
                 className="group"
               >
                 <article className="h-full rounded-[18px] border border-gray-200 bg-[#fdfefe] p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-md md:p-5">
@@ -135,5 +138,21 @@ export default async function CategoryProducts({ params }) {
         )}
       </div>
     </main>
+  );
+}
+
+export default function CategoryProducts({ params }) {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#f1f6f2] px-4 py-6 md:px-6 md:py-8">
+          <div className="mx-auto max-w-[1200px] animate-pulse rounded-[18px] border border-gray-200 bg-white p-6">
+            <p className="text-gray-500">পণ্যের তথ্য লোড হচ্ছে...</p>
+          </div>
+        </main>
+      }
+    >
+      <CategoryProductsData params={params} />
+    </Suspense>
   );
 }
