@@ -1,35 +1,43 @@
 "use client";
+
 import HeroPhoto from "@/image/bazar-hero.png";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function MarketBanner() {
-  const today = new Date();
+  const [date, setDate] = useState("");
 
-  const date = today.toLocaleDateString("bn-BD", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  useEffect(() => {
+    const today = new Date();
+
+    const formattedDate = today.toLocaleDateString("bn-BD", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+    setDate(formattedDate);
+  }, []);
 
   return (
-    <section className="w-full mt-2 rounded-[28px] flex justify-center mx-auto max-w-[1200px]  border border-gray-200 bg-[#fdfefe] px-6 py-7 md:px-10 md:py-8">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+    <section className="mx-auto mt-2 flex w-full max-w-[1200px] justify-center rounded-[28px] border border-gray-200 bg-[#fdfefe] px-6 py-7 md:px-10 md:py-8">
+      <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
         {/* Left Content */}
         <div className="w-full md:w-[65%]">
           {/* Date */}
           <span className="inline-block rounded-full bg-[#e5f5eb] px-4 py-2 text-sm font-medium text-[#07883f]">
-            {date}
+            {date || "তারিখ লোড হচ্ছে..."}
           </span>
 
           {/* Title */}
-          <h1 className="mt-4 text-1xl md:text-2xl lg:text-3xl font-bold tracking-tight text-[#202824]">
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-[#202824] md:text-2xl lg:text-3xl">
             আজকের বাজারের দাম এক নজরে
           </h1>
 
           {/* Description */}
-          <p className="mt-4 max-w-1xl text-base md:text-[15px] leading-8 text-gray-500">
+          <p className="mt-4 max-w-1xl text-base leading-8 text-gray-500 md:text-[15px]">
             চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম — বাজারভিত্তিক
             বিস্তারিত, গড়, সর্বনিম্ন-সর্বাধিক এবং দামের পরিবর্তন এক জায়গায়।
           </p>
@@ -45,14 +53,14 @@ export default function MarketBanner() {
         </div>
 
         {/* Right Image */}
-        <div className="relative flex w-full md:w-[35%] justify-center">
+        <div className="relative flex w-full justify-center md:w-[35%]">
           <Image
             src={HeroPhoto}
             alt="বাজারের পণ্য"
             width={300}
             height={230}
-            className="h-auto w-[220px] md:w-[280px] object-contain"
             priority
+            className="h-auto w-[220px] object-contain md:w-[280px]"
           />
         </div>
       </div>

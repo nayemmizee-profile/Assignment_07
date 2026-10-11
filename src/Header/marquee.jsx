@@ -13,7 +13,7 @@ export default async function Marquee() {
       throw new Error("Failed to fetch products");
     }
 
-    products = (await res.json()).slice(0, 10);
+    products = (await res.json()).slice(0, 20);
   } catch (error) {
     console.error("Marquee API Error:", error);
   }
@@ -32,12 +32,10 @@ export default async function Marquee() {
           const isUp = product.change?.dir === "up";
 
           return (
-            <>
-        <Link href={`/products/${product.category}`} ><div
+            <Link
               key={`${product.id}-${index}`}
-              className="flex h-[20px] shrink-0 items-center gap-2
-                         border-r border-gray-200 px-4
-                         whitespace-nowrap"
+              href={`/products/${product.category}`}
+              className="flex h-11 shrink-0 items-center gap-2 border-r border-gray-200 px-4 whitespace-nowrap hover:bg-gray-50"
             >
               {/* Product Icon */}
               <span className="text-base">
@@ -66,10 +64,10 @@ export default async function Marquee() {
                 })}
                 %
               </span>
-            </div>
+            </Link>
           );
         })}
       </div>
-    </div></Link>
-  )</>;
+    </div>
+  );
 }

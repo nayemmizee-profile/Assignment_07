@@ -36,7 +36,7 @@ body {
 }
 
 .price-marquee-track {
-  animation: price-marquee 35s linear infinite;
+  animation: price-marquee 20s linear infinite;
   width: max-content;
 }
 
