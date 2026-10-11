@@ -47,7 +47,7 @@ export default function ProfileDropdown() {
     try {
       await authClient.signOut();
       setIsOpen(false);
-      router.push("/signin");
+      router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Sign out failed:", error);
