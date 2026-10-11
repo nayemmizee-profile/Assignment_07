@@ -132,22 +132,28 @@ export default function ProfilePage() {
             {userImage ? (
               <Image
                 src={userImage}
-                alt={userName}
+                alt={user?.name || "Profile picture"}
+                width={80}
+                height={80}
+                unoptimized
                 className="h-20 w-20 shrink-0 rounded-2xl object-cover"
               />
             ) : (
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gray-100 text-gray-500">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-200">
                 <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="40"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-12 w-12"
-                  aria-hidden="true"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
                 >
-                  <path d="M12 12a5 5 0 100-10 5 5 0 000 10Zm0 2c-4.42 0-8 2.24-8 5v2h16v-2c0-2.76-3.58-5-8-5Z" />
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
                 </svg>
               </div>
             )}
-
             <div className="min-w-0">
               <h2 className="truncate text-xl font-semibold text-[#26332b]">
                 {userName}

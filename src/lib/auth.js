@@ -20,6 +20,18 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+    },
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    },
+  },
 
   trustedOrigins: ["http://localhost:3000"],
 });

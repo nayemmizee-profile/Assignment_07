@@ -41,11 +41,6 @@ export default function SignupPage() {
     const cleanName = name.trim();
     const cleanEmail = email.trim();
 
-    // console.log("User Name:", cleanName);
-    // console.log("User Email:", cleanEmail);
-    // console.log("Password length:", password.length);
-    // console.log("Confirm Password matches:", password === confirmPassword);
-
     if (!cleanName || !cleanEmail || !password || !confirmPassword) {
       setError("সবগুলো ঘর পূরণ করুন।");
       return;
@@ -64,7 +59,7 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const { data, error: authError } = await authClient.signUp.email({
+      const { error: authError } = await authClient.signUp.email({
         name: cleanName,
         email: cleanEmail,
         password,
@@ -79,36 +74,69 @@ export default function SignupPage() {
       }
 
       setSuccess("অ্যাকাউন্ট তৈরি হয়েছে।");
-
-      // ইমেইল verification চালু থাকলে Better Auth-এর
-      // verification flow অনুযায়ী পরবর্তী পদক্ষেপ নাও।
-      if (data) {
-        router.push("/");
-        router.refresh();
-      }
-    } catch {
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      console.error("Signup error:", err);
       setError("সমস্যা হয়েছে। ইন্টারনেট ও সার্ভার পরীক্ষা করুন।");
     } finally {
       setLoading(false);
     }
   }
 
+  // Google ও GitHub OAuth শুরু করার ফাংশন
   async function handleSocialSignIn(provider) {
     setError("");
+    setSuccess("");
     setSocialLoading(provider);
 
     try {
       const { error: authError } = await authClient.signIn.social({
-        provider,
+        // provider হবে "google" অথবা "github"
+        provider: "google",
+
+        // OAuth সফল হলে ইউজারকে এই পেজে ফেরত পাঠাবে
         callbackURL: "/",
       });
 
       if (authError) {
-        setError(authError.message || "সোশ্যাল লগইন করা যায়নি।");
+        setError(authError.message || "সোশ্যাল সাইন আপ করা যায়নি।");
         setSocialLoading("");
       }
-    } catch {
-      setError("সোশ্যাল লগইন শুরু করা যায়নি।");
+
+      // সফল OAuth সাধারণত provider-এর পেজে redirect করে।
+      // তাই এখানে router.push() প্রয়োজন নেই।
+    } catch (err) {
+      console.error("Social authentication error:", err);
+      setError("সোশ্যাল সাইন আপ শুরু করা যায়নি।");
+      setSocialLoading("");
+    }
+  }
+
+  async function handleSocialSignIn(provider) {
+    setError("");
+    setSuccess("");
+    setSocialLoading(provider);
+
+    try {
+      const { error: authError } = await authClient.signIn.social({
+        // provider হবে "google" অথবা "github"
+        provider: "github",
+
+        // OAuth সফল হলে ইউজারকে এই পেজে ফেরত পাঠাবে
+        callbackURL: "/",
+      });
+
+      if (authError) {
+        setError(authError.message || "সোশ্যাল সাইন আপ করা যায়নি।");
+        setSocialLoading("");
+      }
+
+      // সফল OAuth সাধারণত provider-এর পেজে redirect করে।
+      // তাই এখানে router.push() প্রয়োজন নেই।
+    } catch (err) {
+      console.error("Social authentication error:", err);
+      setError("সোশ্যাল সাইন আপ শুরু করা যায়নি।");
       setSocialLoading("");
     }
   }
@@ -228,7 +256,7 @@ export default function SignupPage() {
 
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={
                     showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"
                   }
@@ -274,7 +302,7 @@ export default function SignupPage() {
 
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
                   aria-label={
                     showConfirmPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"
                   }
@@ -320,7 +348,7 @@ export default function SignupPage() {
               </p>
             )}
 
-            {/* Submit */}
+            {/* Email signup */}
             <button
               type="submit"
               disabled={loading || Boolean(socialLoading)}
@@ -347,7 +375,7 @@ export default function SignupPage() {
             <div className="h-px flex-1 bg-[#e0e8e2]" />
           </div>
 
-          {/* Social login */}
+          {/* Google and GitHub OAuth buttons */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <button
               type="button"
@@ -355,10 +383,12 @@ export default function SignupPage() {
               disabled={loading || Boolean(socialLoading)}
               className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#dce6de] bg-white px-3 py-3 text-sm font-semibold transition hover:bg-[#f5faf6] disabled:opacity-60"
             >
-              <span className="text-lg font-extrabold text-[#4285F4]">G</span>
-              {socialLoading === "google"
-                ? "অপেক্ষা করুন..."
-                : "Google দিয়ে চালিয়ে যান"}
+              {socialLoading === "google" ? (
+                <LoaderCircle className="animate-spin" size={19} />
+              ) : (
+                <span className="text-lg font-extrabold text-[#4285F4]">G</span>
+              )}
+              Google দিয়ে চালিয়ে যান
             </button>
 
             <button
@@ -367,7 +397,9 @@ export default function SignupPage() {
               disabled={loading || Boolean(socialLoading)}
               className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#dce6de] bg-white px-3 py-3 text-sm font-semibold transition hover:bg-[#f5faf6] disabled:opacity-60"
             >
-              <span className="text-[#202c23]">
+              {socialLoading === "github" ? (
+                <LoaderCircle className="animate-spin" size={19} />
+              ) : (
                 <svg
                   viewBox="0 0 24 24"
                   width="19"
@@ -377,10 +409,8 @@ export default function SignupPage() {
                 >
                   <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.07c-3.1.68-3.76-1.32-3.76-1.32-.5-1.3-1.24-1.65-1.24-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 .1.72 2.4 3.34 1.73.1-.73.4-1.23.71-1.51-2.47-.28-5.07-1.24-5.07-5.5 0-1.22.44-2.22 1.16-3-.12-.28-.5-1.42.11-2.96 0 0 .95-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.1-1.43 3.04-1.15 3.04-1.15.61 1.54.23 2.68.12 2.96.72.78 1.15 1.78 1.15 3.01 0 4.27-2.6 5.21-5.08 5.49.4.35.76 1.02.76 2.06V22c0 .3.2.64.77.53A11.1 11.1 0 0 0 12 .9Z" />
                 </svg>
-              </span>
-              {socialLoading === "github"
-                ? "অপেক্ষা করুন..."
-                : "GitHub দিয়ে চালিয়ে যান"}
+              )}
+              GitHub দিয়ে চালিয়ে যান
             </button>
           </div>
 

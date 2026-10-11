@@ -163,7 +163,7 @@ export default function ProfileDropdown() {
 
           {/* My profile */}
           <Link
-            href="/profile"
+            href="./profileUpdate"
             role="menuitem"
             onClick={() => setIsOpen(false)}
             className="mt-3 flex items-center gap-4 rounded-xl px-3 py-2 text-[14px] text-[#26332b] transition hover:bg-green-50 sm:text-[12px] "
