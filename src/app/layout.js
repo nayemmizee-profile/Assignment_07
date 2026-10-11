@@ -3,6 +3,7 @@ import Header from "@/Header/head";
 import Marquee from "@/Header/marquee";
 import Navbar from "@/Header/navbar";
 import { Suspense } from "react";
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 
 export const metadata = {
@@ -20,6 +21,14 @@ export default function RootLayout({ children }) {
           {children}
         </Suspense>
         <Footer />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          theme="light"
+        />
       </body>
     </html>
   );

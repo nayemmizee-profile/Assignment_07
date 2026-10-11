@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -31,7 +32,9 @@ export default function SignInPage() {
     setError("");
 
     if (!email.trim() || !password) {
-      setError("ইমেইল ও পাসওয়ার্ড লিখুন।");
+      const message = "ইমেইল ও পাসওয়ার্ড লিখুন।";
+      setError(message);
+      toast.error(message);
       return;
     }
 
@@ -45,18 +48,31 @@ export default function SignInPage() {
       });
 
       if (authError) {
-        setError(
+        const message =
           authError.message ||
-            "ইমেইল অথবা পাসওয়ার্ড সঠিক নয়। আবার চেষ্টা করুন।",
-        );
+          "ইমেইল অথবা পাসওয়ার্ড সঠিক নয়। আবার চেষ্টা করুন।";
+
+        setError(message);
+        toast.error(message);
         return;
       }
 
-      router.push("/");
-      router.refresh();
+      toast.success("সফলভাবে লগইন হয়েছে!", {
+        position: "top-right",
+        autoClose: 2500,
+      });
+
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 800);
     } catch (err) {
       console.error("Email sign-in error:", err);
-      setError("লগইন করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।");
+
+      const message = "লগইন করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।";
+
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -68,38 +84,24 @@ export default function SignInPage() {
 
     try {
       const { error: authError } = await authClient.signIn.social({
-        provider: "google",
+        provider,
         callbackURL: "/",
       });
 
       if (authError) {
-        setError(authError.message || "সোশ্যাল লগইন করা যায়নি।");
+        const message = authError.message || "সোশ্যাল লগইন করা যায়নি।";
+
+        setError(message);
+        toast.error(message);
         setSocialLoading("");
       }
     } catch (err) {
       console.error(`${provider} sign-in error:`, err);
-      setError("লগইন শুরু করা যায়নি। আবার চেষ্টা করুন।");
-      setSocialLoading("");
-    }
-  }
 
-  async function handleSocialSignIn(provider) {
-    setError("");
-    setSocialLoading(provider);
+      const message = "লগইন শুরু করা যায়নি। আবার চেষ্টা করুন।";
 
-    try {
-      const { error: authError } = await authClient.signIn.social({
-        provider: "github",
-        callbackURL: "/",
-      });
-
-      if (authError) {
-        setError(authError.message || "সোশ্যাল লগইন করা যায়নি।");
-        setSocialLoading("");
-      }
-    } catch (err) {
-      console.error(`${provider} sign-in error:`, err);
-      setError("লগইন শুরু করা যায়নি। আবার চেষ্টা করুন।");
+      setError(message);
+      toast.error(message);
       setSocialLoading("");
     }
   }

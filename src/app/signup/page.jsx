@@ -1,5 +1,4 @@
 "use client";
-
 import { authClient } from "@/lib/auth-client";
 import {
   ArrowLeft,
@@ -17,6 +16,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -67,14 +67,21 @@ export default function SignupPage() {
       });
 
       if (authError) {
-        setError(
-          authError.message || "অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।",
-        );
+        const message =
+          authError.message || "অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।";
+
+        setError(message);
+        toast.error(message);
         return;
       }
 
-      setSuccess("অ্যাকাউন্ট তৈরি হয়েছে।");
+      toast.success("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+
       router.push("/");
+
       router.refresh();
     } catch (err) {
       console.error("Signup error:", err);
